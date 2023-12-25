@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Таблиця</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+    td {
+      width: 50px;
+      height: 50px;
+      border: 1px solid black;
+      text-align: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <table id="myTable">
+    <!-- Тут буде генеруватися таблиця -->
+  </table>
+  <input type="color" id="colorPicker">
+  <script>
+    // Отримати посилання на таблицю
+    const table = document.getElementById('myTable');
+    // Отримати посилання на палітру кольорів
+    const colorPicker = document.getElementById('colorPicker');
+    // Змінна для зберігання вибраного рядка
+    let selectedRow = -1;
+
+    // Функція для генерації таблиці
+    function generateTable() {
+      let cellCount = 1;
+      for (let i = 0; i < 6; i++) {
+        const row = table.insertRow();
+        for (let j = 0; j < 6; j++) {
+          const cell = row.insertCell();
+          cell.textContent = cellCount;
+          cell.addEventListener('mouseover', changeRandomColor);
+          cell.addEventListener('click', changeSelectedColor);
+          cellCount++;
+        }
+      }
+    }
+
+    // Функція для зміни кольору на випадковий при наведенні
+    function changeRandomColor(event) {
+      const cell = event.target;
+      if (cell.style.backgroundColor === '') {
+        cell.style.backgroundColor = getRandomColor();
+      }
+    }
+
+    // Функція для зміни кольору на вибраний з палітри при кліку
+    function changeSelectedColor(event) {
+      const cell = event.target;
+      cell.style.backgroundColor = colorPicker.value;
+    }
+
+    // Функція для отримання випадкового кольору
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Функція для зміни кольору рядка при подвійному кліку
+    function changeRowColor(event) {
+      const cells = table.rows[selectedRow].cells;
+      for (let i = 0; i < cells.length; i += 2) {
+        cells[i].style.backgroundColor = colorPicker.value;
+      }
+    }
+
+    // Обробник подвійного кліку по таблиці
+    table.addEventListener('dblclick', function (event) {
+      const cell = event.target;
+      const rowIndex = cell.parentNode.rowIndex;
+      if (selectedRow === -1) {
+        selectedRow = rowIndex;
+      } else {
+        // Скидаємо попередній вибраний рядок
+        const prevRow = table.rows[selectedRow].cells;
+        for (let i = 0; i < prevRow.length; i++) {
+          prevRow[i].style.backgroundColor = '';
+        }
+        selectedRow = rowIndex;
+      }
+      changeRowColor();
+    });
+
+    // Генерувати таблицю при завантаженні сторінки
+    generateTable();
+  </script>
+</body>
+</html>
